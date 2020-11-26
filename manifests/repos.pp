@@ -44,10 +44,21 @@ class docker::repos (
           default => 'absent',
         }
 
-        apt::pin { 'docker':
+        apt::pin { 'docker-origin':
           ensure   => $pin_ensure,
           origin   => $repo_host,
           priority => $docker::apt_source_pin_level,
+        }
+
+        $pin_version = $docker::version ? {
+            $docker::version => $docker::version,
+            default          => '',
+        }
+        apt::pin { 'docker-ce':
+          ensure   => $pin_ensure,
+          priority => $docker::apt_source_pin_level,
+          packages => 'docker-ce*',
+          version  => $pin_version,
         }
 
         if $docker::manage_package {
